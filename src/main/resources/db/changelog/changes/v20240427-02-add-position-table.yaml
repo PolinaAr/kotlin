@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - preConditions:
+      - or:
+          - dbms:
+              type: postgresql
+  - changeSet:
+      id: "v20240427-02-add-position-table"
+      author: "Palina Arkhipenka"
+      preConditions:
+        - not:
+            - tableExists:
+                tableName: position
+      changes:
+        - createTable:
+            tableName: position
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    unique: true

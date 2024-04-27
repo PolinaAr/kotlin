@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - preConditions:
+      - or:
+          - dbms:
+              type: postgresql
+  - changeSet:
+      id: "v20240427-01-add-job-table"
+      author: "Palina Arkhipenka"
+      preConditions:
+        - not:
+            - tableExists:
+                tableName: job
+      changes:
+        - createTable:
+            tableName: job
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar
+                  constraints:
+                    nullable: false
+                    unique: true

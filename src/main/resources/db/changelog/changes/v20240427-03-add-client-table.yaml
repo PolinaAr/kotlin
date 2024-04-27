@@ -1,0 +1,64 @@
+databaseChangeLog:
+  - preConditions:
+      - or:
+          - dbms:
+              type: postgresql
+  - changeSet:
+      id: "v20240427-03-add-client-table"
+      author: "Palina Arkhipenka"
+      preConditions:
+        - not:
+            - tableExists:
+                tableName: client
+      changes:
+        - createTable:
+            tableName: client
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: first_name
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar
+                  constraints:
+                    nullable: false
+              - column:
+                  name: job_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_client_job
+                    references: job(id)
+              - column:
+                  name: position_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_client_position
+                    references: position(id)
+              - column:
+                  name: deleted
+                  type: boolean
+              - column:
+                  name: version
+                  type: int
+              - column:
+                  name: created
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated
+                  type: timestamp
+                  constraints:
+                    nullable: false
