@@ -1,8 +1,11 @@
 package com.example.kotlin.model
 
 import com.example.kotlin.dto.ClientDto
+import com.example.kotlin.enums.Gender
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -21,6 +24,9 @@ data class Client(
     var lastName: String,
     @Column(nullable = false)
     var email: String,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    var gender: Gender,
     @ManyToOne
     @JoinColumn(name = "job_id")
     var job: Job? = null,
@@ -35,6 +41,7 @@ fun Client.toDto(): ClientDto = ClientDto(
     firstName = this.firstName,
     lastName = this.lastName,
     email = this.email,
+    gender = this.gender,
     job = this.job?.name,
     position = this.position?.name
 )

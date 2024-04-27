@@ -3,7 +3,10 @@ package com.example.kotlin.service
 import com.example.kotlin.AbstractUnitTests
 import com.example.kotlin.dto.ClientDto
 import com.example.kotlin.dto.ClientSaveDto
+import com.example.kotlin.dto.GenderResponseDto
+import com.example.kotlin.enums.Gender
 import com.example.kotlin.exeption.BadRequestException
+import com.example.kotlin.external.GenderizeApiService
 import com.example.kotlin.model.Client
 import com.example.kotlin.model.Job
 import com.example.kotlin.model.Position
@@ -34,6 +37,9 @@ class ClientServiceImplTest : AbstractUnitTests {
     @Mock
     lateinit var positionRepository: PositionRepository
 
+    @Mock
+    lateinit var genderizeApiService: GenderizeApiService
+
     @InjectMocks
     lateinit var clientService: ClientServiceImpl
 
@@ -44,9 +50,21 @@ class ClientServiceImplTest : AbstractUnitTests {
 
     @BeforeEach
     fun setup() {
-        client = Client(id, "First", "Last", "email@example.com", null, null)
-        clientDto = ClientDto(id, "First", "Last", "email@example.com", null, null)
-        clientSaveDto = ClientSaveDto("First", "Last", "email@example.com", "Andersen", "Engineer")
+        client = Client(
+            id, "First", "Last",
+            "email@example.com", Gender.FEMALE, null, null
+        )
+
+        clientDto = ClientDto(
+            id, "First", "Last",
+            "email@example.com", Gender.FEMALE, null, null
+        )
+
+        clientSaveDto = ClientSaveDto(
+            "First", "Last",
+            "email@example.com", Gender.FEMALE, "Andersen", "Engineer"
+        )
+
     }
 
     @Test
@@ -59,7 +77,7 @@ class ClientServiceImplTest : AbstractUnitTests {
     }
 
     @Test
-    fun `Throw exception for get client by id`() {
+    fun `No elements throw exception for get client by id`() {
         whenever(clientRepository.findById(id)).thenReturn(Optional.empty())
 
         assertThrows(NoSuchElementException::class.java) {
@@ -107,7 +125,53 @@ class ClientServiceImplTest : AbstractUnitTests {
     }
 
     @Test
-    fun `Throw exception for saving client`() {
+    fun `Save client when no gender`(){
+        clientSaveDto.gender = null
+        client.job = Job(1L, "Andersen")
+        client.position = Position(1L, "Engineer")
+        val genderResponseDto = GenderResponseDto(12345, "First", "female", 0.95f)
+
+
+        whenever(clientRepository.existsByEmail(anyString())).thenReturn(false)
+        whenever(jobRepository.findByName(anyString())).thenReturn(null)
+        whenever(positionRepository.findByName(anyString())).thenReturn(null)
+        whenever(jobRepository.save(any())).thenReturn(Job(1L, "Engineer"))
+        whenever(positionRepository.save(any())).thenReturn(Position(1L, "Senior"))
+        whenever(clientRepository.save(any())).thenReturn(client)
+        whenever(genderizeApiService.getGenderProbability(anyString())).thenReturn(genderResponseDto)
+
+        val result = clientService.saveClient(clientSaveDto)
+
+        assertEquals(clientSaveDto.firstName, result.firstName)
+        assertEquals(clientSaveDto.lastName, result.lastName)
+        assertEquals(clientSaveDto.email, result.email)
+        assertEquals(clientSaveDto.job, result.job)
+        assertEquals(clientSaveDto.position, result.position)
+        assertEquals(Gender.FEMALE, result.gender)
+    }
+
+    @Test
+    fun `Gender not detected for save client`(){
+        clientSaveDto.gender = null
+        client.job = Job(1L, "Andersen")
+        client.position = Position(1L, "Engineer")
+        val genderResponseDto = GenderResponseDto(12345, "First", "female", 0.75f)
+
+        whenever(clientRepository.existsByEmail(anyString())).thenReturn(false)
+        whenever(jobRepository.findByName(anyString())).thenReturn(null)
+        whenever(positionRepository.findByName(anyString())).thenReturn(null)
+        whenever(jobRepository.save(any())).thenReturn(Job(1L, "Engineer"))
+        whenever(positionRepository.save(any())).thenReturn(Position(1L, "Senior"))
+        whenever(genderizeApiService.getGenderProbability(anyString())).thenReturn(genderResponseDto)
+
+
+        assertThrows(BadRequestException::class.java) {
+            clientService.saveClient(clientSaveDto)
+        }
+    }
+
+    @Test
+    fun `Email exists and throw exception for saving client`() {
 
         whenever(clientRepository.existsByEmail(clientSaveDto.email)).thenReturn(true)
 

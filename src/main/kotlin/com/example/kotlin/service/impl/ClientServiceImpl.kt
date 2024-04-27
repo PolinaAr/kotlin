@@ -2,7 +2,9 @@ package com.example.kotlin.service.impl
 
 import com.example.kotlin.dto.ClientDto
 import com.example.kotlin.dto.ClientSaveDto
+import com.example.kotlin.enums.Gender
 import com.example.kotlin.exeption.BadRequestException
+import com.example.kotlin.external.GenderizeApiService
 import com.example.kotlin.model.Client
 import com.example.kotlin.model.Job
 import com.example.kotlin.model.Position
@@ -19,10 +21,11 @@ import org.springframework.transaction.annotation.Transactional
 class ClientServiceImpl(
     private val clientRepository: ClientRepository,
     private val jobRepository: JobRepository,
-    private val positionRepository: PositionRepository
+    private val positionRepository: PositionRepository,
+    private val genderizeApiService: GenderizeApiService
 ) : ClientService {
 
-    private val logger = KotlinLogging.logger{}
+    private val logger = KotlinLogging.logger {}
 
     @Transactional(readOnly = true)
     override fun getClientById(id: Long): ClientDto {
@@ -50,6 +53,7 @@ class ClientServiceImpl(
             firstName = clientDto.firstName,
             lastName = clientDto.lastName,
             email = clientDto.email,
+            gender = clientDto.gender ?: getGender(clientDto.firstName),
             job = job,
             position = position
         )
@@ -71,6 +75,17 @@ class ClientServiceImpl(
         if (clientRepository.existsByEmail(email)) {
             logger.warn { "Client with email $email already exists" }
             throw BadRequestException("Client with email $email already exists")
+        }
+    }
+
+    private fun getGender(firstName: String): Gender {
+        logger.info { "Send request to determine gender for $firstName" }
+        val genderResponseDto = genderizeApiService.getGenderProbability(firstName)
+        if (genderResponseDto.probability >= 0.8) {
+            return Gender.valueOf(genderResponseDto.gender.uppercase())
+        } else {
+            logger.warn { "Gender not detected for $firstName. Probability is ${genderResponseDto.probability}" }
+            throw BadRequestException("Gender not detected")
         }
     }
 }

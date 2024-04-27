@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - preConditions:
+      - or:
+          - dbms:
+              type: postgresql
+  - changeSet:
+      id: "v20240427-04-add-gender-field-in-client"
+      author: "Palina Arkhipenka"
+      changes:
+        - addColumn:
+            tableName: client
+            columns:
+              - column:
+                  name: gender
+                  type: varchar
+                  constraints:
+                    nullable: false

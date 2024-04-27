@@ -1,4 +1,6 @@
 package com.example.kotlin.exeption
 
-class BadRequestException(message: String) : Exception(message) {
+import java.lang.RuntimeException
+
+class BadRequestException(message: String) : RuntimeException(message) {
 }
