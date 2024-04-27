@@ -84,8 +84,8 @@ class ClientServiceImpl(
         if (genderResponseDto.probability >= 0.8) {
             return Gender.valueOf(genderResponseDto.gender.uppercase())
         } else {
-            logger.warn { "Gender not detected for $firstName. Probability is ${genderResponseDto.probability}" }
-            throw BadRequestException("Gender not detected")
+            logger.warn { "Gender is not detected for $firstName. Probability is ${genderResponseDto.probability}" }
+            throw BadRequestException("Gender is not detected")
         }
     }
 }
