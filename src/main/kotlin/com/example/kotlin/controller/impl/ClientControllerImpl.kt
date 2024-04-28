@@ -3,6 +3,7 @@ package com.example.kotlin.controller.impl
 import com.example.kotlin.controller.ClientController
 import com.example.kotlin.dto.ClientDto
 import com.example.kotlin.dto.ClientSaveDto
+import com.example.kotlin.dto.ClientUpdateDto
 import com.example.kotlin.service.ClientService
 import mu.KotlinLogging
 import org.springframework.web.bind.annotation.RestController
@@ -25,6 +26,11 @@ class ClientControllerImpl(private val clientService: ClientService) : ClientCon
     override fun addClient(clientDto: ClientSaveDto): ClientDto {
         logger.info { "Save client $clientDto" }
         return clientService.saveClient(clientDto)
+    }
+
+    override fun updateClient(id: Long, clientDto: ClientUpdateDto): ClientDto {
+        logger.info { "Update not ,ull fields client with id $id with data $clientDto" }
+        return clientService.updateClient(id, clientDto)
     }
 
     override fun deleteClient(id: Long) {

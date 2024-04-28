@@ -3,6 +3,7 @@ package com.example.kotlin.service
 import com.example.kotlin.AbstractUnitTests
 import com.example.kotlin.dto.ClientDto
 import com.example.kotlin.dto.ClientSaveDto
+import com.example.kotlin.dto.ClientUpdateDto
 import com.example.kotlin.dto.GenderResponseDto
 import com.example.kotlin.enums.Gender
 import com.example.kotlin.exeption.BadRequestException
@@ -43,10 +44,11 @@ class ClientServiceImplTest : AbstractUnitTests {
     @InjectMocks
     lateinit var clientService: ClientServiceImpl
 
-    val id = 1L
+    private val id = 1L
     private lateinit var client: Client
     private lateinit var clientDto: ClientDto
     private lateinit var clientSaveDto: ClientSaveDto
+    private lateinit var clientUpdateDto: ClientUpdateDto
 
     @BeforeEach
     fun setup() {
@@ -65,6 +67,10 @@ class ClientServiceImplTest : AbstractUnitTests {
             "email@example.com", Gender.FEMALE, "Andersen", "Engineer"
         )
 
+        clientUpdateDto = ClientUpdateDto(
+            firstName = "FirstNew",
+            email = "emailNew@example.com"
+        )
     }
 
     @Test
@@ -77,7 +83,7 @@ class ClientServiceImplTest : AbstractUnitTests {
     }
 
     @Test
-    fun `No elements throw exception for get client by id`() {
+    fun `Throw NoSuchElementException when no client for get client by id`() {
         whenever(clientRepository.findById(id)).thenReturn(Optional.empty())
 
         assertThrows(NoSuchElementException::class.java) {
@@ -125,7 +131,7 @@ class ClientServiceImplTest : AbstractUnitTests {
     }
 
     @Test
-    fun `Save client when no gender`(){
+    fun `Save client when no gender`() {
         clientSaveDto.gender = null
         client.job = Job(1L, "Andersen")
         client.position = Position(1L, "Engineer")
@@ -151,7 +157,7 @@ class ClientServiceImplTest : AbstractUnitTests {
     }
 
     @Test
-    fun `Gender not detected for save client`(){
+    fun `Throw BadRequestException when gender not detected for save client`() {
         clientSaveDto.gender = null
         client.job = Job(1L, "Andersen")
         client.position = Position(1L, "Engineer")
@@ -171,12 +177,46 @@ class ClientServiceImplTest : AbstractUnitTests {
     }
 
     @Test
-    fun `Email exists and throw exception for saving client`() {
+    fun `Throw BadRequestException when email exist for saving client`() {
 
         whenever(clientRepository.existsByEmail(clientSaveDto.email)).thenReturn(true)
 
         assertThrows(BadRequestException::class.java) {
             clientService.saveClient(clientSaveDto)
+        }
+    }
+
+    @Test
+    fun `Update client`() {
+        whenever(clientRepository.findById(id)).thenReturn(Optional.of(client))
+
+        val updatedClient = clientService.updateClient(id, clientUpdateDto)
+
+        assertEquals(id, updatedClient.id)
+        assertEquals(clientUpdateDto.firstName, updatedClient.firstName)
+        assertEquals(client.lastName, updatedClient.lastName)
+        assertEquals(clientUpdateDto.email, updatedClient.email)
+        assertEquals(client.gender, updatedClient.gender)
+        assertEquals(client.job?.name, updatedClient.job)
+        assertEquals(client.position?.name, updatedClient.position)
+    }
+
+    @Test
+    fun `Throw NoSuchElementException when no clients for update`() {
+        whenever(clientRepository.findById(id)).thenReturn(Optional.empty())
+
+        assertThrows(NoSuchElementException::class.java) {
+            clientService.updateClient(id, clientUpdateDto)
+        }
+    }
+
+    @Test
+    fun `Throw BadRequestException when email exists for update`() {
+        whenever(clientRepository.findById(1L)).thenReturn(Optional.of(client))
+        whenever(clientRepository.existsByEmail("emailNew@example.com")).thenReturn(true)
+
+        assertThrows(BadRequestException::class.java) {
+            clientService.updateClient(1L, clientUpdateDto)
         }
     }
 
@@ -190,7 +230,7 @@ class ClientServiceImplTest : AbstractUnitTests {
     }
 
     @Test
-    fun `Throw exception when there is no client for delete`() {
+    fun `Throw NoSuchElementException when no client for delete`() {
         whenever(clientRepository.findById(id)).thenReturn(Optional.empty())
 
         assertThrows(NoSuchElementException::class.java) {

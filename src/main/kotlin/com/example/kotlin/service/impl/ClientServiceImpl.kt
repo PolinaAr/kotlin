@@ -2,6 +2,7 @@ package com.example.kotlin.service.impl
 
 import com.example.kotlin.dto.ClientDto
 import com.example.kotlin.dto.ClientSaveDto
+import com.example.kotlin.dto.ClientUpdateDto
 import com.example.kotlin.enums.Gender
 import com.example.kotlin.exeption.BadRequestException
 import com.example.kotlin.external.GenderizeApiService
@@ -41,13 +42,8 @@ class ClientServiceImpl(
     override fun saveClient(clientDto: ClientSaveDto): ClientDto {
         checkUniqueEmail(clientDto.email)
 
-        val job = clientDto.job?.let { jobName ->
-            jobRepository.findByName(jobName) ?: jobRepository.save(Job(name = jobName))
-        }
-
-        val position = clientDto.position?.let { positionName ->
-            positionRepository.findByName(positionName) ?: positionRepository.save(Position(name = positionName))
-        }
+        val job = getJob(clientDto.job)
+        val position = getPosition(clientDto.position)
 
         val client = Client(
             firstName = clientDto.firstName,
@@ -58,6 +54,24 @@ class ClientServiceImpl(
             position = position
         )
         return clientRepository.save(client).toDto()
+    }
+
+    @Transactional
+    override fun updateClient(id: Long, clientDto: ClientUpdateDto): ClientDto {
+        val clientForUpdate = getClientByIdOrThrow(id)
+
+        clientDto.firstName?.let { clientForUpdate.firstName = it }
+        clientDto.lastName?.let { clientForUpdate.lastName = it }
+        clientDto.email?.let { email ->
+            if (email != clientForUpdate.email) {
+                checkUniqueEmail(email)
+            }
+            clientForUpdate.email = email
+        }
+        clientDto.gender?.let { clientForUpdate.gender = it }
+        clientDto.job?.let { clientForUpdate.job = getJob(clientDto.job) }
+        clientDto.position?.let { clientForUpdate.position = getPosition(clientDto.position) }
+        return clientForUpdate.toDto()
     }
 
     @Transactional
@@ -88,4 +102,14 @@ class ClientServiceImpl(
             throw BadRequestException("Gender is not detected")
         }
     }
+
+    private fun getPosition(position: String?) =
+        position?.let { positionName ->
+            positionRepository.findByName(positionName) ?: positionRepository.save(Position(name = positionName))
+        }
+
+    private fun getJob(job: String?) =
+        job?.let { jobName ->
+            jobRepository.findByName(jobName) ?: jobRepository.save(Job(name = jobName))
+        }
 }
