@@ -6,21 +6,41 @@ import com.example.kotlin.dto.ClientSaveDto
 import com.example.kotlin.dto.ClientUpdateDto
 import com.example.kotlin.service.ClientService
 import mu.KotlinLogging
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ClientControllerImpl(private val clientService: ClientService) : ClientController {
 
-    private val logger = KotlinLogging.logger{}
+    private val logger = KotlinLogging.logger {}
 
     override fun getClientById(id: Long): ClientDto {
         logger.info { "Get client with id $id" }
         return clientService.getClientById(id)
     }
 
-    override fun getClients(): List<ClientDto> {
-        logger.info { "Get list of clients" }
-        return clientService.getClients()
+    override fun getClients(
+        searchQuery: String?,
+        firstName: String?,
+        lastName: String?,
+        email: String?,
+        job: String?,
+        position: String?,
+        pageable: Pageable
+    ): Page<ClientDto> {
+        val params = mapOf(
+            "firstName" to firstName,
+            "lastName" to lastName,
+            "email" to email,
+            "job" to job,
+            "position" to position
+        ).filterValues { it != null }.mapValues { it.value!! }
+        logger.info {
+            "Get list of clients with search params: searchQuery=$searchQuery, " +
+                    "pageable=$pageable, params=$params"
+        }
+        return clientService.getClients(searchQuery, params, pageable)
     }
 
     override fun addClient(clientDto: ClientSaveDto): ClientDto {

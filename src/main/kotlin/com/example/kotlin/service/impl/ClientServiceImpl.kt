@@ -14,7 +14,11 @@ import com.example.kotlin.repository.ClientRepository
 import com.example.kotlin.repository.JobRepository
 import com.example.kotlin.repository.PositionRepository
 import com.example.kotlin.service.ClientService
+import com.example.kotlin.specification.ClientSpecification
 import mu.KotlinLogging
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -34,8 +38,20 @@ class ClientServiceImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun getClients(): List<ClientDto> {
-        return clientRepository.findAll().map { client -> client.toDto() }
+    override fun getClients(
+        searchQuery: String?,
+        searchParams: Map<String, String>,
+        pageable: Pageable
+    ): Page<ClientDto> {
+
+        var spec: Specification<Client> = Specification.where(null)
+
+        if (searchParams.isNotEmpty()) {
+            spec = spec.and(ClientSpecification.withFieldMatch(searchParams))
+        }
+
+        searchQuery?.let { spec = spec.and(ClientSpecification.withPartialMatch(searchQuery)) }
+        return clientRepository.findAll(spec, pageable).map { client -> client.toDto() }
     }
 
     @Transactional

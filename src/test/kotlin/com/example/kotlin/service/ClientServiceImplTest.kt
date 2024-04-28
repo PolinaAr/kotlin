@@ -25,6 +25,10 @@ import org.mockito.Mock
 import org.mockito.Mockito.any
 import org.mockito.Mockito.anyString
 import org.mockito.kotlin.whenever
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import java.util.*
 
 class ClientServiceImplTest : AbstractUnitTests {
@@ -93,18 +97,20 @@ class ClientServiceImplTest : AbstractUnitTests {
 
     @Test
     fun `Get list of clients`() {
-        whenever(clientRepository.findAll()).thenReturn(listOf(client))
+        val page = PageImpl(listOf(client))
+        whenever(clientRepository.findAll(Specification.where(null), Pageable.unpaged())).thenReturn(page)
 
-        val result = clientService.getClients()
+        val result = clientService.getClients(null, emptyMap(), Pageable.unpaged())
 
-        assertEquals(listOf(clientDto), result)
+        val expected = PageImpl(listOf(clientDto))
+        assertEquals(expected, result)
     }
 
     @Test
     fun `Get empty list of clients`() {
-        whenever(clientRepository.findAll()).thenReturn(emptyList())
+        whenever(clientRepository.findAll(Specification.where(null), Pageable.unpaged())).thenReturn(Page.empty())
 
-        val result = clientService.getClients()
+        val result = clientService.getClients(null, emptyMap(), Pageable.unpaged())
 
         assertTrue(result.isEmpty())
     }
