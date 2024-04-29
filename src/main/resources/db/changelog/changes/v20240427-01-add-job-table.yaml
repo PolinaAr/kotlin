@@ -3,6 +3,8 @@ databaseChangeLog:
       - or:
           - dbms:
               type: postgresql
+          - dbms:
+              type: h2
   - changeSet:
       id: "v20240427-01-add-job-table"
       author: "Palina Arkhipenka"

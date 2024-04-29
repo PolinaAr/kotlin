@@ -84,7 +84,6 @@ class ClientServiceImpl(
             }
             clientForUpdate.email = email
         }
-        clientDto.gender?.let { clientForUpdate.gender = it }
         clientDto.job?.let { clientForUpdate.job = getJob(clientDto.job) }
         clientDto.position?.let { clientForUpdate.position = getPosition(clientDto.position) }
         return clientForUpdate.toDto()

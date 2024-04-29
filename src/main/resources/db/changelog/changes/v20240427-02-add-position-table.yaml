@@ -3,6 +3,8 @@ databaseChangeLog:
       - or:
           - dbms:
               type: postgresql
+          - dbms:
+              type: h2
   - changeSet:
       id: "v20240427-02-add-position-table"
       author: "Palina Arkhipenka"
