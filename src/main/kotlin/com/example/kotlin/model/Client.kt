@@ -1,6 +1,6 @@
 package com.example.kotlin.model
 
-import com.example.kotlin.dto.ClientDto
+import com.example.kotlin.dto.client.ClientDto
 import com.example.kotlin.enums.Gender
 import jakarta.persistence.Column
 import jakarta.persistence.Entity

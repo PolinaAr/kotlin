@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - preConditions:
+      - or:
+          - dbms:
+              type: postgresql
+          - dbms:
+              type: h2
+  - changeSet:
+      id: "v20240429-07-fill-roles"
+      author: "Palina Arkhipenka"
+      preConditions:
+        - tableExists:
+            tableName: role
+      changes:
+        - sql: INSERT INTO role (name) VALUES ('ROLE_ADMIN');
+        - sql: INSERT INTO role (name) VALUES ('ROLE_MODERATOR');
+        - sql: INSERT INTO role (name) VALUES ('ROLE_USER');

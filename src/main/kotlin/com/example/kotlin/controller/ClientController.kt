@@ -1,8 +1,8 @@
 package com.example.kotlin.controller
 
-import com.example.kotlin.dto.ClientDto
-import com.example.kotlin.dto.ClientSaveDto
-import com.example.kotlin.dto.ClientUpdateDto
+import com.example.kotlin.dto.client.ClientDto
+import com.example.kotlin.dto.client.ClientSaveDto
+import com.example.kotlin.dto.client.ClientUpdateDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Page

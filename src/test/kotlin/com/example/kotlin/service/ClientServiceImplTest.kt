@@ -1,10 +1,10 @@
 package com.example.kotlin.service
 
 import com.example.kotlin.AbstractUnitTests
-import com.example.kotlin.dto.ClientDto
-import com.example.kotlin.dto.ClientSaveDto
-import com.example.kotlin.dto.ClientUpdateDto
-import com.example.kotlin.dto.GenderResponseDto
+import com.example.kotlin.dto.client.ClientDto
+import com.example.kotlin.dto.client.ClientSaveDto
+import com.example.kotlin.dto.client.ClientUpdateDto
+import com.example.kotlin.dto.client.GenderResponseDto
 import com.example.kotlin.enums.Gender
 import com.example.kotlin.exeption.BadRequestException
 import com.example.kotlin.external.GenderizeApiService

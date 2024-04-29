@@ -1,12 +1,13 @@
 package com.example.kotlin.controller
 
 import com.example.kotlin.AbstractIntegrationTest
-import com.example.kotlin.dto.ClientDto
-import com.example.kotlin.dto.ClientSaveDto
-import com.example.kotlin.dto.ClientUpdateDto
+import com.example.kotlin.dto.client.ClientDto
+import com.example.kotlin.dto.client.ClientSaveDto
+import com.example.kotlin.dto.client.ClientUpdateDto
 import com.example.kotlin.enums.Gender
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
 import org.springframework.test.context.jdbc.Sql
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
@@ -36,6 +37,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     )
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Should return client by id`() {
         val clientId = 1
         val expected = objectMapper.writeValueAsString(client1)
@@ -47,6 +49,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Should return clients with default pagination`() {
         mockMvc.perform(get("/clients"))
             .andExpect(status().isOk)
@@ -57,6 +60,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Should return clients with filtered by first and last names`() {
         val firstName = "paul"
         val lastName = "son"
@@ -74,6 +78,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Should return clients with filtered by searchQuery`() {
         val searchQuery = "Mar res"
         mockMvc.perform(
@@ -89,6 +94,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     @Sql(value = ["/db/client-before-save-method.sql"])
     fun `Should save client`() {
         val clientSaveDto = ClientSaveDto(
@@ -118,6 +124,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Can't save with the same email`() {
         val clientSaveDto = ClientSaveDto(
             firstName = "John",
@@ -136,6 +143,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Update client`() {
         val updateDto = ClientUpdateDto(
             firstName = "New",
@@ -156,6 +164,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Can't update client - client not found`() {
         val updateDto = ClientUpdateDto(
             firstName = "New",
@@ -169,6 +178,7 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Can't update client - email exists`() {
         val updateDto = ClientUpdateDto(
             email = "watson@gmail.com"
@@ -182,12 +192,14 @@ class ClientControllerImplTest : AbstractIntegrationTest() {
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Delete client`() {
         mockMvc.perform(delete("/clients/{id}", 1))
             .andExpect(status().isOk)
     }
 
     @Test
+    @WithMockUser(roles = ["USER"])
     fun `Can't delete client - client not found`() {
         mockMvc.perform(delete("/clients/{id}", 999))
             .andExpect(status().isNotFound)

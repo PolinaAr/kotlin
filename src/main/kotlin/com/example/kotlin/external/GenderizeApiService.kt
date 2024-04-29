@@ -1,6 +1,6 @@
 package com.example.kotlin.external
 
-import com.example.kotlin.dto.GenderResponseDto
+import com.example.kotlin.dto.client.GenderResponseDto
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 

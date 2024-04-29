@@ -1,12 +1,13 @@
-package com.example.kotlin.dto
+package com.example.kotlin.dto.client
 
 import com.example.kotlin.enums.Gender
 
-data class ClientSaveDto(
+data class ClientDto(
+    var id: Long? = null,
     var firstName: String,
     var lastName: String,
     var email: String,
-    var gender: Gender? = null,
+    var gender: Gender,
     var job: String? = null,
     var position: String? = null
 )

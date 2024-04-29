@@ -1,4 +1,4 @@
-package com.example.kotlin.dto
+package com.example.kotlin.dto.client
 
 data class GenderResponseDto(
     val count : Int,

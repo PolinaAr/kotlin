@@ -1,9 +1,9 @@
 package com.example.kotlin.controller.impl
 
 import com.example.kotlin.controller.ClientController
-import com.example.kotlin.dto.ClientDto
-import com.example.kotlin.dto.ClientSaveDto
-import com.example.kotlin.dto.ClientUpdateDto
+import com.example.kotlin.dto.client.ClientDto
+import com.example.kotlin.dto.client.ClientSaveDto
+import com.example.kotlin.dto.client.ClientUpdateDto
 import com.example.kotlin.service.ClientService
 import mu.KotlinLogging
 import org.springframework.data.domain.Page

@@ -17,3 +17,8 @@ spring:
 h2:
   console:
     enabled: true
+
+app:
+  jwt:
+    expirationTime: 86400000
+    secret: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa

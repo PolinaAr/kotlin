@@ -1,8 +1,8 @@
 package com.example.kotlin.service
 
-import com.example.kotlin.dto.ClientDto
-import com.example.kotlin.dto.ClientSaveDto
-import com.example.kotlin.dto.ClientUpdateDto
+import com.example.kotlin.dto.client.ClientDto
+import com.example.kotlin.dto.client.ClientSaveDto
+import com.example.kotlin.dto.client.ClientUpdateDto
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
