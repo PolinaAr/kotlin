@@ -8,14 +8,14 @@ import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
-import java.security.Key
 import java.util.*
 import java.util.function.Function
 import javax.crypto.SecretKey
 
 @Component
 class JwtUtil(
-    @Value("\${app.jwt.secret}") secretString: String) {
+    @Value("\${app.jwt.secret}") secretString: String
+) {
     private val secret: SecretKey = Keys.hmacShaKeyFor(secretString.toByteArray(StandardCharsets.UTF_8))
 
     @Value("\${app.jwt.expirationTime}")
