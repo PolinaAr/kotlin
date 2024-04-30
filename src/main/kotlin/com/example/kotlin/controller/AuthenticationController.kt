@@ -6,6 +6,7 @@ import com.example.kotlin.dto.user.UserRegistrationDto
 import com.example.kotlin.dto.user.UserResponseDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -16,7 +17,7 @@ interface AuthenticationController {
 
     @PostMapping("/register")
     @Operation(summary = "Register user in system")
-    fun registration(@RequestBody user: UserRegistrationDto): UserResponseDto
+    fun registration(@Valid @RequestBody user: UserRegistrationDto): UserResponseDto
 
     @PostMapping("/login")
     @Operation(summary = "Login in system", description = "Provide email and password")

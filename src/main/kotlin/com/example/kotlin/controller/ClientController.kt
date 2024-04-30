@@ -5,6 +5,7 @@ import com.example.kotlin.dto.client.ClientSaveDto
 import com.example.kotlin.dto.client.ClientUpdateDto
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -42,11 +43,11 @@ interface ClientController {
         summary = "Add client",
         description = "Provide info about client. Email must be unique. Job and position are optional"
     )
-    fun addClient(@RequestBody clientDto: ClientSaveDto): ClientDto
+    fun addClient(@Valid @RequestBody clientDto: ClientSaveDto): ClientDto
 
     @PatchMapping("/{id}")
     @Operation(summary = "Update client", description = "Only not null fields will be updated")
-    fun updateClient(@PathVariable id: Long, @RequestBody clientDto: ClientUpdateDto): ClientDto
+    fun updateClient(@PathVariable id: Long, @Valid @RequestBody clientDto: ClientUpdateDto): ClientDto
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete client by id", description = "Provide id for deleting client")
