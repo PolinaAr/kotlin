@@ -11,11 +11,12 @@ import java.nio.charset.StandardCharsets
 import java.security.Key
 import java.util.*
 import java.util.function.Function
+import javax.crypto.SecretKey
 
 @Component
 class JwtUtil(
     @Value("\${app.jwt.secret}") secretString: String) {
-    private val secret: Key = Keys.hmacShaKeyFor(secretString.toByteArray(StandardCharsets.UTF_8))
+    private val secret: SecretKey = Keys.hmacShaKeyFor(secretString.toByteArray(StandardCharsets.UTF_8))
 
     @Value("\${app.jwt.expirationTime}")
     private var expiration: Long = 0
@@ -32,11 +33,11 @@ class JwtUtil(
     fun isValidToken(token: String): Boolean {
         return try {
             val claimsJws: Jws<Claims> = Jwts.parser()
-                .setSigningKey(secret)
+                .decryptWith(secret)
                 .build()
-                .parseClaimsJws(token)
+                .parseSignedClaims(token)
 
-            !claimsJws.body.expiration.before(Date())
+            !claimsJws.payload.expiration.before(Date())
         } catch (e: JwtException) {
             throw JwtException("Token is not correct")
         } catch (e: IllegalArgumentException) {
@@ -50,10 +51,10 @@ class JwtUtil(
 
     private fun <T> getClaimFromToken(token: String, claimsResolver: Function<Claims, T>): T {
         val claims: Claims = Jwts.parser()
-            .setSigningKey(secret)
+            .decryptWith(secret)
             .build()
-            .parseClaimsJws(token)
-            .body
+            .parseSignedClaims(token)
+            .payload
         return claimsResolver.apply(claims)
     }
 }
