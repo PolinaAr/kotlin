@@ -9,6 +9,7 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PatchMapping
@@ -24,10 +25,12 @@ interface ClientController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Get client by id", description = "Provide id for getting client")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MODERATOR')")
     fun getClientById(@PathVariable id: Long): ClientDto
 
     @GetMapping
     @Operation(summary = "Get all clients.", description = "You can add any search query or pageable params")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MODERATOR')")
     fun getClients(
         @RequestParam(required = false) searchQuery: String?,
         @RequestParam(required = false) firstName: String?,
@@ -43,13 +46,16 @@ interface ClientController {
         summary = "Add client",
         description = "Provide info about client. Email must be unique. Job and position are optional"
     )
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MODERATOR')")
     fun addClient(@Valid @RequestBody clientDto: ClientSaveDto): ClientDto
 
     @PatchMapping("/{id}")
     @Operation(summary = "Update client", description = "Only not null fields will be updated")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MODERATOR')")
     fun updateClient(@PathVariable id: Long, @Valid @RequestBody clientDto: ClientUpdateDto): ClientDto
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete client by id", description = "Provide id for deleting client")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'MODERATOR')")
     fun deleteClient(@PathVariable id: Long)
 }
